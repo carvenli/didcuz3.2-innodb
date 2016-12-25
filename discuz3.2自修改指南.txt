@@ -1,0 +1,137 @@
+discuz3.2 简体中文/传统中文utf8
+
+自修改指南/教程
+
+config/config_global_default.php
+配置redis和memcache在这里，论坛数据库账号密码在这里
+查找：
+$_config['db'][1]['dbcharset'] 		= 'utf8';
+修改为：
+$_config['db'][1]['dbcharset'] 		= 'utf8mb4';
+
+
+config/config_ucenter_default.php
+用户中心数据库账号密码在这里
+查找：
+define('UC_DBCHARSET', 'utf8');
+修改为：
+define('UC_DBCHARSET', 'utf8mb4');
+
+define('UC_CONNECT', 'mysql');
+这里是否修改成mysqli，自行研究
+
+
+install/include/install_var.php
+查找：
+define('DBCHARSET', 'utf8');
+修改成：
+define('DBCHARSET', 'utf8mb4');
+
+
+install/include/install_function.php
+查找：MYISAM（一共两个）
+MYISAM
+替换成：
+InnoDB
+
+
+此文件不修改：如果有需要修改，自行研究
+install/data/group_index.xml
+查找：
+<?xml version="1.0" encoding="ISO-8859-1"?>
+修改为：
+<?xml version="1.0" encoding="UTF-8"?>
+并且文件本身也保存为无标记utf8格式
+
+
+install/data/install.sql
+查找：
+TYPE=MyISAM
+全部替换成：
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+用无签名utf8格式保存文件
+
+全部char修改成varchar，全部varchar(255) 修改成)varchar(140)让括号里面的数字不超过150，150+100等于250，乘以4字节，等于1000字节，不能超过1000字节
+具体查找：char字符前面有一个空格
+ char(
+修改成：字符前面有一个空格
+ varchar(
+查找：字符前面有一个空格
+ varchar(255)
+修改成：字符前面有一个空格
+ varchar(140)
+另外：
+pre_common_member_grouppm这个表，mysql的InnoDB规则为每个表只能有个一个自增列并且这个列必须是一个key，所以把gpmid这个列新增为一个键
+也就是，查找：PRIMARY KEY (uid,gpmid)
+在后面写上一个半角逗号：,
+然后，在下一行写入：
+  KEY gpmid (gpmid)
+pre_forum_post这个表中，position列自增，虽然设置为主键，但是根据mysql的InnoDB规则，再增加一个键，position增加为键
+也就是，查找：KEY `first` (tid,`first`)
+在后面写上一个半角逗号：,
+然后，在下一行写入：
+  KEY position (position)
+
+
+uc_server/install/uc.sql
+完全依照修改install/data/install.sql的方法
+查找：
+TYPE=MyISAM
+全部替换成：
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+用无签名utf8格式保存文件
+
+全部char修改成varchar，全部varchar(255) 修改成)varchar(140)让括号里面的数字不超过150，150+100等于250，乘以4字节，等于1000字节，不能超过1000字节
+具体查找：char字符前面有一个空格
+ char(
+修改成：字符前面有一个空格
+ varchar(
+查找：字符前面有一个空格
+ varchar(255)
+修改成：字符前面有一个空格
+ varchar(140)
+
+
+简体中文utf8
+uc_server/install/var.inc.php
+查找：
+define('INSTALL_LANG', 'SC_GBK');
+修改成：
+define('INSTALL_LANG', 'SC_UTF-8');
+查找：
+define('CHARSET', 'gbk');
+修改成：
+define('CHARSET', 'utf-8');
+查找：
+define('DBCHARSET', 'gbk');
+修改成：
+define('DBCHARSET', 'utf8mb4');
+
+
+传统中文utf8
+uc_server/install/var.inc.php
+查找：
+define('INSTALL_LANG', 'SC_GBK');
+修改成：
+define('INSTALL_LANG', 'TC_UTF-8');
+查找：
+define('CHARSET', 'gbk');
+修改成：
+define('CHARSET', 'utf-8');
+查找：
+define('DBCHARSET', 'gbk');
+修改成：
+define('DBCHARSET', 'utf8mb4');
+
+
+uc_server/install/func.inc.php
+查找：MYISAM（一共两个）
+MYISAM
+替换成：
+InnoDB
+
+
+
+
+
+
